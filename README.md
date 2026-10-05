@@ -109,6 +109,7 @@ distributed-api-test-framework/
 ├── README.md
 └── run_tests.bat
 
+
 ## Running the Project
 
 ### Prerequisites
@@ -125,3 +126,44 @@ From the project root:
 
 ```bash
 docker compose up --build
+
+
+## Testing Capabilities
+
+The framework validates API behavior across multiple HTTP operations and distributed service versions.
+
+### HTTP Operations
+
+| Operation | Purpose | Example Endpoint | Expected Result |
+|---|---|---|---|
+| GET | Retrieve user information | `/users/1` | `200 OK` |
+| GET | Validate missing user | `/users/999` | `404 Not Found` |
+| POST | Create a new user | `/users` | `201 Created` |
+| PUT | Replace user information | `/users/1` | `200 OK` |
+| PATCH | Partially update user information | `/users/1` | `200 OK` |
+| DELETE | Delete a user | `/users/1` | `200 OK` |
+
+### Response Validation
+
+The framework validates:
+
+- HTTP status codes
+- Expected JSON fields
+- JSON field values
+- Required response fields
+- API version
+- Service health status
+
+Example:
+
+```python
+ResponseValidator.assert_status(
+    response,
+    200
+)
+
+ResponseValidator.assert_json_field(
+    response,
+    "version",
+    expected_version
+)
