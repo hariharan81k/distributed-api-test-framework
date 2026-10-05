@@ -45,6 +45,13 @@ jobs:
         run: |
           docker compose run --rm api-tests-v2
 
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: distributed-api-test-reports
+          path: reports/
+
 
       - name: Stop services
         if: always()
