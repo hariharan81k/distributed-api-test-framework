@@ -37,13 +37,19 @@ jobs:
 
 
       - name: Run API v1 tests
+        id: v1_tests
+        continue-on-error: true
         run: |
           docker compose run --rm api-tests-v1
 
 
       - name: Run API v2 tests
+        id: v2_tests
+        continue-on-error: true
         run: |
           docker compose run --rm api-tests-v2
+
+      
 
       - name: Upload test reports
         if: always()
@@ -75,3 +81,13 @@ jobs:
         if: always()
         run: |
           docker compose logs api-v2
+
+      - name: Evaluate test results
+        if: always()
+        run: |
+          if [ "${{ steps.v1_tests.outcome }}" != "success" ] || [ "${{ steps.v2_tests.outcome }}" != "success" ]; then
+            echo "Distributed API tests failed."
+            exit 1
+          fi
+
+          echo "Distributed API tests passed for both API versions."
