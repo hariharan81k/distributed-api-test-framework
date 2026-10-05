@@ -167,3 +167,39 @@ ResponseValidator.assert_json_field(
     "version",
     expected_version
 )
+
+
+## CI/CD Pipeline
+
+The project uses GitHub Actions to automatically build and execute the distributed API test framework.
+
+The CI pipeline runs on:
+
+- Push to `main`
+- Pull requests targeting `main`
+
+### CI Workflow
+
+```text
+Developer
+    │
+    │ git push
+    ▼
+GitHub Repository
+    │
+    ▼
+GitHub Actions
+    │
+    ├── Checkout source code
+    │
+    ├── Build Docker images
+    │
+    ├── Start API v1 and API v2
+    │
+    ├── Run API v1 tests
+    │
+    ├── Run API v2 tests
+    │
+    ├── Generate test reports
+    │
+    └── Upload reports as artifacts
