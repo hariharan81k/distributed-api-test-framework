@@ -1,0 +1,70 @@
+name: Distributed API Tests
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+
+  distributed-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+
+      - name: Build API services
+        run: |
+          docker compose build api-v1 api-v2 api-tests-v1 api-tests-v2
+
+
+      - name: Start API services
+        run: |
+          docker compose up -d api-v1 api-v2
+
+
+      - name: Run API v1 tests
+        run: |
+          docker compose run --rm api-tests-v1
+
+
+      - name: Run API v2 tests
+        run: |
+          docker compose run --rm api-tests-v2
+
+
+      - name: Stop services
+        if: always()
+        run: |
+          docker compose down
+
+
+      - name: Show test containers
+        if: always()
+        run: |
+          docker compose ps -a
+
+
+      - name: Show API v1 logs
+        if: always()
+        run: |
+          docker compose logs api-v1
+
+
+      - name: Show API v2 logs
+        if: always()
+        run: |
+          docker compose logs api-v2
