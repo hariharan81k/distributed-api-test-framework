@@ -1,0 +1,81 @@
+services:
+
+  api-v1:
+    build:
+      context: ./mock_services/v1
+      dockerfile: Dockerfile
+
+    ports:
+      - "8001:8000"
+
+
+  api-v2:
+    build:
+      context: ./mock_services/v2
+      dockerfile: Dockerfile
+
+    ports:
+      - "8002:8000"
+
+
+  api-tests-v1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    environment:
+      TEST_SERVICE_URL: "http://api-v1:8000"
+      API_TIMEOUT: "5"
+      EXPECTED_API_VERSION: "v1"
+
+    depends_on:
+      api-v1:
+        condition: service_healthy
+
+    volumes:
+      - ./reports:/app/reports
+
+    command:
+      - python
+      - -m
+      - pytest
+      - -v
+      - -n
+      - "2"
+      - -m
+      - distributed
+      - --html=reports/v1-test-report.html
+      - --self-contained-html
+      - --junitxml=reports/v1-test-results.xml
+
+
+  api-tests-v2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    environment:
+      TEST_SERVICE_URL: "http://api-v2:8000"
+      API_TIMEOUT: "5"
+      EXPECTED_API_VERSION: "v2"
+
+    depends_on:
+      api-v2:
+        condition: service_healthy
+      
+
+    volumes:
+      - ./reports:/app/reports
+
+    command:
+      - python
+      - -m
+      - pytest
+      - -v
+      - -n
+      - "2"
+      - -m
+      - distributed
+      - --html=reports/v2-test-report.html
+      - --self-contained-html
+      - --junitxml=reports/v2-test-results.xml
