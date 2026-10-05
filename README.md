@@ -203,3 +203,13 @@ GitHub Actions
     ├── Generate test reports
     │
     └── Upload reports as artifacts
+
+
+## Configuration
+
+The framework uses environment variables to make the API client and distributed test execution configurable across different environments.
+
+### API Base URL
+
+```text
+API_BASE_URL
